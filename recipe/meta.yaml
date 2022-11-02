@@ -66,12 +66,12 @@ about:
   doc_source_url: https://github.com/flask-admin/flask-admin/blob/master/doc/index.rst
   dev_url: https://github.com/flask-admin/flask-admin/
   description: |
-  Flask-Admin is a batteries-included, simple-to-use Flask
-  extension that lets you add admin interfaces to Flask
-  applications. It is inspired by the django-admin package,
-  but implemented in such a way that the developer has 
-  total control of the look, feel and functionality of the
-  resulting application.
+    Flask-Admin is a batteries-included, simple-to-use Flask
+    extension that lets you add admin interfaces to Flask
+    applications. It is inspired by the django-admin package,
+    but implemented in such a way that the developer has 
+    total control of the look, feel and functionality of the
+    resulting application.
 
 extra:
   recipe-maintainers:
