@@ -63,6 +63,7 @@ about:
   license_url: https://github.com/flask-admin/flask-admin/blob/master/LICENSE
   summary: 'Simple and extensible admin interface framework for Flask'
   doc_url: https://flask-admin.readthedocs.io/en/latest/
+  doc_source_url: https://github.com/flask-admin/flask-admin/blob/master/doc/index.rst
   dev_url: https://github.com/flask-admin/flask-admin/
 
 extra:
