@@ -49,6 +49,10 @@ test:
     - flask_admin.form
     - flask_admin.model
     - flask_admin.translations
+  requires:
+    - pip
+  commands:
+    - pip check
 
 about:
   home: https://github.com/flask-admin/flask-admin/
