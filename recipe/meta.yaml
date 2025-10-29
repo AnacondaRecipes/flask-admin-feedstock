@@ -1,29 +1,52 @@
 {% set name = "Flask-Admin" %}
-{% set version = "1.6.1" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 24cae2af832b6a611a01d7dc35f42d266c1d6c75a426b869d8cb241b78233369
+  url: https://pypi.org/packages/source/F/Flask-Admin/flask_admin-2.0.0.tar.gz
+  sha256: c5878ab1ea92c9e8345c0e1a2cd15851f5ecf2e1616d7fb9158487769f188e81
 
 build:
   number: 0
-  skip: true  # [py<36]
+  skip: true  # [py<310]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 
 requirements:
   host:
     - python
     - pip
-    - wheel
-    - setuptools
+    - flit-core <4
   run:
     - python
-    - flask >=0.7
-    - wtforms
+    - flask >=2.0
+    - wtforms >=2.3
+    - jinja2 >=3.0
+    - markupsafe >=2.0
+    - werkzeug >=2.0
+    - typing_extensions  # [py<311]
+  run_constrained:
+    - azure-storage-blob >=12.0.0
+    - tablib >=3.0.0
+    - geoalchemy2 >=0.14.0
+    - shapely >=2
+    - pillow >=10.0.0
+    - mongoengine >=0.29.0
+    - peewee >=3.14.0
+    - wtf-peewee >=3.0.4
+    - pymongo >=3.10.0
+    - redis-py >=4.0.0
+    - boto3 >=1.33
+    - flask-sqlalchemy >=3
+    - sqlalchemy >=1.4
+    - sqlalchemy_utils >=0.38.0
+    - sqlalchemy-citext >=1.8.0
+    - colour >=0.1.5
+    - email_validator >=2
+    - arrow >=0.14.0
+    - flask-babel >=3.0.1
 
 test:
   imports:
@@ -53,6 +76,8 @@ about:
     but implemented in such a way that the developer has
     total control of the look, feel and functionality of the
     resulting application.
+
+
 
 extra:
   recipe-maintainers:
