@@ -109,8 +109,6 @@ test:
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-    - set PYTHONUTF8=1              # [win]
-    - set PYTHONIOENCODING="UTF-8"  # [win]
     - pytest -v flask_admin/tests {{ ignore_tests }} {{ deselect_tests }}
 
 about:
