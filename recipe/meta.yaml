@@ -66,6 +66,11 @@ requirements:
 {% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_basic.py::test_model" %}
 # E AssertionError: assert 'text/html' == 'text/tab-separated-values'
 {% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/test_model.py::test_export_tablib" %}
+# E   ModuleNotFoundError: No module named 'sqlalchemy_utils' 
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_basic.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form_rules.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_multi_pk.py" %}  # [py>=312]
 
 test:
   source_files:
@@ -81,7 +86,8 @@ test:
     - pip
     - pytest
     - flask-sqlalchemy
-    - sqlalchemy-utils
+    # sqlalchemy-utils pins colour, but run_constrained for flask-admin demands colour >=0.1.5 which is not availble for py>3.11
+    - sqlalchemy-utils  # [py<312]
     - peewee
     - shapely
     - moto
