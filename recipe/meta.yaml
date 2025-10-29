@@ -71,7 +71,7 @@ requirements:
 {% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_basic.py::test_model" %}
 # E AssertionError: assert 'text/html' == 'text/tab-separated-values'
 {% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/test_model.py::test_export_tablib" %}
-# Failing on CI with no reason
+# Hanging on CI with no reason
 {% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/test_form_upload.py::test_image_upload_field" %}
 
 test:
@@ -106,6 +106,8 @@ test:
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - set PYTHONUTF8=1              # [win]
+    - set PYTHONIOENCODING="UTF-8"  # [win]
     - pytest -v flask_admin/tests {{ ignore_tests }} {{ deselect_tests }}
 
 about:
