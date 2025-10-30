@@ -1,31 +1,85 @@
 {% set name = "Flask-Admin" %}
-{% set version = "1.6.1" %}
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 24cae2af832b6a611a01d7dc35f42d266c1d6c75a426b869d8cb241b78233369
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name|lower|replace('-', '_') }}-{{ version }}.tar.gz
+  sha256: c5878ab1ea92c9e8345c0e1a2cd15851f5ecf2e1616d7fb9158487769f188e81
 
 build:
   number: 0
-  skip: true  # [py<36]
+  skip: true  # [py<310]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
 
 requirements:
   host:
     - python
     - pip
-    - wheel
-    - setuptools
+    - flit-core <4
   run:
     - python
-    - flask >=0.7
-    - wtforms
+    - flask >=2.0
+    - wtforms >=2.3
+    - jinja2 >=3.0
+    - markupsafe >=2.0
+    - werkzeug >=2.0
+    - typing_extensions  # [py<311]
+  run_constrained:
+    - azure-storage-blob >=12.0.0
+    - tablib >=3.0.0
+    - geoalchemy2 >=0.14.0
+    - shapely >=2
+    - pillow >=10.0.0
+    - mongoengine >=0.29.0
+    - peewee >=3.14.0
+    - wtf-peewee >=3.0.4
+    - pymongo >=3.10.0
+    - redis-py >=4.0.0
+    - boto3 >=1.33
+    - flask-sqlalchemy >=3
+    - sqlalchemy >=1.4
+    - sqlalchemy-utils >=0.38.0
+    - sqlalchemy-citext >=1.8.0
+    - colour >=0.1.5
+    - email_validator >=2
+    - arrow >=0.14.0
+    - flask-babel >=3.0.1
+
+# E   ModuleNotFoundError: No module named 'citext' - sqlalchemy-citext is not in main channel
+{% set ignore_tests = " --ignore=flask_admin/tests/sqla/test_postgres.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_translation.py" %}
+# E   ModuleNotFoundError: No module named 'wtfpeewee' - wtf-peewee is not in main channel
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/peeweemodel/test_basic.py" %}
+# E   ModuleNotFoundError: No module named 'mongoengine' - mongoengine is not in main channel
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/mongoengine" %}
+# E azure.core.exceptions.ServiceRequestError: <urllib3.connection.HTTPConnection object at 0x119738f10>: Failed to establish a new connection: [Errno 61] Connection refused
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/fileadmin/test_fileadmin_azure.py" %}
+# E   ModuleNotFoundError: No module named 'sqlalchemy_utils' 
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_basic.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form_rules.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_multi_pk.py" %}  # [py>=312]
+# E sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+{% set deselect_tests = " --deselect=flask_admin/tests/geoa/test_basic.py::test_model" %}
+{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/geoa/test_basic.py::test_none" %}
+# E pymongo.errors.ServerSelectionTimeoutError: localhost:27017: [Errno 61] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)
+{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/pymongo/test_basic.py::test_model" %}
+# E AssertionError: assert furl('http://www.example.com') == 'http://www.example.com'
+{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_basic.py::test_model" %}
+# E AssertionError: assert 'text/html' == 'text/tab-separated-values'
+{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/test_model.py::test_export_tablib" %}
+# Hanging on CI with no reason on win
+{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/test_form_upload.py::test_image_upload_field" %}  # [win]
+# > assert rv.data.decode("utf-8").find("path=dummy2.txt") < rv.data.decode(# "utf-8"# ).find("path=dummy.txt")
+# E assert 5390 < 4030
+{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/fileadmin/test_fileadmin.py::TestLocalFileAdmin::test_fileadmin_sort_bogus_url_param" %}  # [win]
 
 test:
+  source_files:
+    - flask_admin/tests
   imports:
     - flask_admin
     - flask_admin.contrib
@@ -35,17 +89,36 @@ test:
     - flask_admin.translations
   requires:
     - pip
+    - pytest
+    - flask-sqlalchemy
+    # sqlalchemy-utils pins colour, but run_constrained for flask-admin demands colour >=0.1.5 which is not availble for py>3.11
+    - sqlalchemy-utils  # [py<312]
+    - peewee
+    - shapely
+    - moto
+    - geoalchemy2
+    - boto3
+    - azure-storage-blob
+    - arrow
+    - pymongo
+    - bs4
+    - email_validator
+    - pillow
+    - asgiref
+    - psycopg2
   commands:
     - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -v flask_admin/tests {{ ignore_tests }} {{ deselect_tests }}
 
 about:
-  home: https://github.com/flask-admin/flask-admin/
+  home: https://github.com/pallets-eco/flask-admin
   license: BSD-3-Clause
   license_file: LICENSE
   license_family: BSD
   summary: Simple and extensible admin interface framework for Flask
-  doc_url: https://flask-admin.readthedocs.io/
-  dev_url: https://github.com/flask-admin/flask-admin/
+  doc_url: https://flask-admin.readthedocs.io
+  dev_url: https://github.com/pallets-eco/flask-admin
   description: |
     Flask-Admin is a batteries-included, simple-to-use Flask
     extension that lets you add admin interfaces to Flask
