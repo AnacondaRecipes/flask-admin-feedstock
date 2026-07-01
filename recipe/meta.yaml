@@ -1,13 +1,41 @@
 {% set name = "Flask-Admin" %}
-{% set version = "2.0.0" %}
+{% set version = "2.2.0" %}
+{% set ignore_tests = " --ignore=flask_admin/tests/sqla/test_postgres.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_translation.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/peeweemodel/test_basic.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/mongoengine" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/fileadmin/test_fileadmin_azure.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_basic.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form_rules.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_multi_pk.py" %}  # [py>=312]
+{% set deselect_tests = " --deselect=flask_admin/tests/geoa/test_basic.py::test_model" %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/geoa/test_basic.py::test_none"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/pymongo/test_basic.py::test_model"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_basic.py::test_model"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/test_model.py::test_export_tablib"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/test_form_upload.py::test_image_upload_field"' %}  # [win]
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/fileadmin/test_fileadmin.py::TestLocalFileAdmin::test_fileadmin_sort_bogus_url_param"' %}  # [win]
 
+# E   ModuleNotFoundError: No module named 'citext' - sqlalchemy-citext is not in main channel
+# E   ModuleNotFoundError: No module named 'wtfpeewee' - wtf-peewee is not in main channel
+# E   ModuleNotFoundError: No module named 'mongoengine' - mongoengine is not in main channel
+# E azure.core.exceptions.ServiceRequestError: <urllib3.connection.HTTPConnection object at 0x119738f10>: Failed to establish a new connection: [Errno 61] Connection refused
+# E   ModuleNotFoundError: No module named 'sqlalchemy_utils'
+# E sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+# E pymongo.errors.ServerSelectionTimeoutError: localhost:27017: [Errno 61] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)
+# E AssertionError: assert furl('http://www.example.com') == 'http://www.example.com'
+# E AssertionError: assert 'text/html' == 'text/tab-separated-values'
+# Hanging on CI with no reason on win
+# > assert rv.data.decode("utf-8").find("path=dummy2.txt") < rv.data.decode(# "utf-8"# ).find("path=dummy.txt")
+# E assert 5390 < 4030
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name|lower|replace('-', '_') }}-{{ version }}.tar.gz
-  sha256: c5878ab1ea92c9e8345c0e1a2cd15851f5ecf2e1616d7fb9158487769f188e81
+  sha256: 4a5b844789c10076da89320563600a7addf781e73ab315ae800521b3ec018509
 
 build:
   number: 0
@@ -47,35 +75,7 @@ requirements:
     - email_validator >=2
     - arrow >=0.14.0
     - flask-babel >=3.0.1
-
-# E   ModuleNotFoundError: No module named 'citext' - sqlalchemy-citext is not in main channel
-{% set ignore_tests = " --ignore=flask_admin/tests/sqla/test_postgres.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_translation.py" %}
-# E   ModuleNotFoundError: No module named 'wtfpeewee' - wtf-peewee is not in main channel
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/peeweemodel/test_basic.py" %}
-# E   ModuleNotFoundError: No module named 'mongoengine' - mongoengine is not in main channel
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/mongoengine" %}
-# E azure.core.exceptions.ServiceRequestError: <urllib3.connection.HTTPConnection object at 0x119738f10>: Failed to establish a new connection: [Errno 61] Connection refused
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/fileadmin/test_fileadmin_azure.py" %}
-# E   ModuleNotFoundError: No module named 'sqlalchemy_utils' 
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_basic.py" %}  # [py>=312]
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form_rules.py" %}  # [py>=312]
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form.py" %}  # [py>=312]
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_multi_pk.py" %}  # [py>=312]
-# E sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
-{% set deselect_tests = " --deselect=flask_admin/tests/geoa/test_basic.py::test_model" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/geoa/test_basic.py::test_none" %}
-# E pymongo.errors.ServerSelectionTimeoutError: localhost:27017: [Errno 61] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/pymongo/test_basic.py::test_model" %}
-# E AssertionError: assert furl('http://www.example.com') == 'http://www.example.com'
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_basic.py::test_model" %}
-# E AssertionError: assert 'text/html' == 'text/tab-separated-values'
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/test_model.py::test_export_tablib" %}
-# Hanging on CI with no reason on win
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/test_form_upload.py::test_image_upload_field" %}  # [win]
-# > assert rv.data.decode("utf-8").find("path=dummy2.txt") < rv.data.decode(# "utf-8"# ).find("path=dummy.txt")
-# E assert 5390 < 4030
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/fileadmin/test_fileadmin.py::TestLocalFileAdmin::test_fileadmin_sort_bogus_url_param" %}  # [win]
+    - sqlalchemy_utils >=0.38.0
 
 test:
   source_files:
@@ -126,6 +126,16 @@ about:
     but implemented in such a way that the developer has
     total control of the look, feel and functionality of the
     resulting application.
+
+
+
+
+
+
+
+
+
+
 
 extra:
   recipe-maintainers:
