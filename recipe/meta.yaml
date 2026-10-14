@@ -1,13 +1,13 @@
-{% set name = "Flask-Admin" %}
-{% set version = "2.2.0" %}
+{% set name = "flask-admin" %}
+{% set version = "2.2.1" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name|lower|replace('-', '_') }}-{{ version }}.tar.gz
-  sha256: 4a5b844789c10076da89320563600a7addf781e73ab315ae800521b3ec018509
+  sha256: 08b4b6b63d2100598add70c1dc9a695f484e3c16c894c09ac70af26acb26a87d
 
 build:
   number: 0
@@ -22,10 +22,10 @@ requirements:
   run:
     - python
     - flask >=2.0
-    - wtforms >=2.3
     - jinja2 >=3.0
     - markupsafe >=2.0
     - werkzeug >=2.0
+    - wtforms >=2.3
     - typing_extensions  # [py<311]
   run_constrained:
     # azure-blob-storage
@@ -57,6 +57,8 @@ requirements:
     - arrow >=0.14.0
     # translations
     - flask-babel >=3.0.1
+    # rediscli
+    - redis >= 4.0.0
 
 # E   ModuleNotFoundError: No module named 'citext' - sqlalchemy-citext is not in main channel
 # E   ModuleNotFoundError: No module named 'wtfpeewee' - wtf-peewee is not in main channel
@@ -102,10 +104,6 @@ requirements:
 {% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_self[SQLALiteProvider-with_db]" %}
 {% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_base_class[SQLALiteProvider-with_session_deprecated]" %}
 {% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_base_class[SQLALiteProvider-with_db]" %}
-
-test:
-  commands:
-    - pytest -vv flask_admin/tests {{ deselect_tests }}
 
 test:
   source_files:
