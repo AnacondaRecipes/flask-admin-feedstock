@@ -1,13 +1,55 @@
 {% set name = "Flask-Admin" %}
-{% set version = "2.2.0" %}
+{% set version = "2.2.1" %}
+{% set ignore_tests = " --ignore=flask_admin/tests/sqla/test_postgres.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_translation.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/peeweemodel/test_basic.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/mongoengine" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/fileadmin/test_fileadmin_azure.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_basic.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form_rules.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form.py" %}  # [py>=312]
+{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_multi_pk.py" %}  # [py>=312]
+{% set deselect_tests = " --deselect=flask_admin/tests/geoa/test_basic.py::test_model" %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/geoa/test_basic.py::test_none"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/pymongo/test_basic.py::test_model"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_basic.py::test_model"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/test_model.py::test_export_tablib"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/test_form_upload.py::test_image_upload_field"' %}  # [win]
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/fileadmin/test_fileadmin.py::TestLocalFileAdmin::test_fileadmin_sort_bogus_url_param"' %}  # [win]
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/bootstrap4/test_renders.py::test_css_class_with_combined[SQLALiteProvider]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form[SQLALiteProvider-with_session_deprecated]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form[SQLALiteProvider-with_db]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_required[SQLALiteProvider-with_session_deprecated]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_required[SQLALiteProvider-with_db]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_ajax_fk[SQLALiteProvider-with_session_deprecated]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_ajax_fk[SQLALiteProvider-with_db]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_self[SQLALiteProvider-with_session_deprecated]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_self[SQLALiteProvider-with_db]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_base_class[SQLALiteProvider-with_session_deprecated]"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_base_class[SQLALiteProvider-with_db]"' %}
 
+# E   ModuleNotFoundError: No module named 'citext' - sqlalchemy-citext is not in main channel
+# E   ModuleNotFoundError: No module named 'wtfpeewee' - wtf-peewee is not in main channel
+# E   ModuleNotFoundError: No module named 'mongoengine' - mongoengine is not in main channel
+# E azure.core.exceptions.ServiceRequestError: <urllib3.connection.HTTPConnection object at 0x119738f10>: Failed to establish a new connection: [Errno 61] Connection refused
+# E   ModuleNotFoundError: No module named 'sqlalchemy_utils'
+# E sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+# E pymongo.errors.ServerSelectionTimeoutError: localhost:27017: [Errno 61] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)
+# E AssertionError: assert furl('http://www.example.com') == 'http://www.example.com'
+# E AssertionError: assert 'text/html' == 'text/tab-separated-values'
+# Hanging on CI with no reason on win
+# > assert rv.data.decode("utf-8").find("path=dummy2.txt") < rv.data.decode(# "utf-8"# ).find("path=dummy.txt")
+# E assert 5390 < 4030
+# Not supported by Anaconda
+# >       from flask_sqlalchemy_lite import SQLAlchemy as SQLAlchemyLite
+# E       ModuleNotFoundError: No module named 'flask_sqlalchemy_lite'
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name|lower|replace('-', '_') }}-{{ version }}.tar.gz
-  sha256: 4a5b844789c10076da89320563600a7addf781e73ab315ae800521b3ec018509
+  sha256: 08b4b6b63d2100598add70c1dc9a695f484e3c16c894c09ac70af26acb26a87d
 
 build:
   number: 0
@@ -57,55 +99,18 @@ requirements:
     - arrow >=0.14.0
     # translations
     - flask-babel >=3.0.1
-
-# E   ModuleNotFoundError: No module named 'citext' - sqlalchemy-citext is not in main channel
-# E   ModuleNotFoundError: No module named 'wtfpeewee' - wtf-peewee is not in main channel
-# E   ModuleNotFoundError: No module named 'mongoengine' - mongoengine is not in main channel
-# E azure.core.exceptions.ServiceRequestError: <urllib3.connection.HTTPConnection object at 0x119738f10>: Failed to establish a new connection: [Errno 61] Connection refused
-# E   ModuleNotFoundError: No module named 'sqlalchemy_utils'
-# E sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
-# E pymongo.errors.ServerSelectionTimeoutError: localhost:27017: [Errno 61] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)
-# E AssertionError: assert furl('http://www.example.com') == 'http://www.example.com'
-# E AssertionError: assert 'text/html' == 'text/tab-separated-values'
-# Hanging on CI with no reason on win
-# > assert rv.data.decode("utf-8").find("path=dummy2.txt") < rv.data.decode(# "utf-8"# ).find("path=dummy.txt")
-# E assert 5390 < 4030
-
-{% set ignore_tests = " --ignore=flask_admin/tests/sqla/test_postgres.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_translation.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/peeweemodel/test_basic.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/mongoengine" %}
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/fileadmin/test_fileadmin_azure.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_basic.py" %}  # [py>=312]
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form_rules.py" %}  # [py>=312]
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_form.py" %}  # [py>=312]
-{% set ignore_tests = ignore_tests + " --ignore=flask_admin/tests/sqla/test_multi_pk.py" %}  # [py>=312]
-{% set deselect_tests = " --deselect=flask_admin/tests/geoa/test_basic.py::test_model" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/geoa/test_basic.py::test_none" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/pymongo/test_basic.py::test_model" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_basic.py::test_model" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/test_model.py::test_export_tablib" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/test_form_upload.py::test_image_upload_field" %}  # [win]
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/fileadmin/test_fileadmin.py::TestLocalFileAdmin::test_fileadmin_sort_bogus_url_param" %}  # [win]
-
-# Not supported by Anaconda
-# >       from flask_sqlalchemy_lite import SQLAlchemy as SQLAlchemyLite
-# E       ModuleNotFoundError: No module named 'flask_sqlalchemy_lite'
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/bootstrap4/test_renders.py::test_css_class_with_combined[SQLALiteProvider]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form[SQLALiteProvider-with_session_deprecated]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form[SQLALiteProvider-with_db]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_required[SQLALiteProvider-with_session_deprecated]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_required[SQLALiteProvider-with_db]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_ajax_fk[SQLALiteProvider-with_session_deprecated]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_ajax_fk[SQLALiteProvider-with_db]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_self[SQLALiteProvider-with_session_deprecated]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_self[SQLALiteProvider-with_db]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_base_class[SQLALiteProvider-with_session_deprecated]" %}
-{% set deselect_tests = deselect_tests + " --deselect=flask_admin/tests/sqla/test_inlineform.py::test_inline_form_base_class[SQLALiteProvider-with_db]" %}
+    - redis-py >=4.0.0
+    - sqlalchemy_utils >=0.38.0
 
 test:
   commands:
     - pytest -vv flask_admin/tests {{ deselect_tests }}
+    - pip check
+    - pip check
+    - pip check
+    - pip check
+  requires:
+    - pip
 
 test:
   source_files:
